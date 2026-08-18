@@ -687,8 +687,15 @@ BEGIN
   IF EXISTS (
     SELECT 1 FROM information_schema.tables WHERE table_name = 'TB.CALENDARIO_PERMISSOES_USUARIO'
   ) THEN
-    ALTER TABLE public."TB.CALENDARIO_PERMISSOES_USUARIO" 
-      ADD CONSTRAINT "TB.CALENDARIO_PERMISSOES_USUARIO_usuario_id_fkey" 
+    -- Remove permissões órfãs (usuario_id sem linha correspondente em TB.CALENDARIO_USUARIOS)
+    -- que impediriam a criação da FK abaixo
+    DELETE FROM public."TB.CALENDARIO_PERMISSOES_USUARIO" p
+    WHERE NOT EXISTS (
+      SELECT 1 FROM public."TB.CALENDARIO_USUARIOS" u WHERE u.id = p.usuario_id
+    );
+
+    ALTER TABLE public."TB.CALENDARIO_PERMISSOES_USUARIO"
+      ADD CONSTRAINT "TB.CALENDARIO_PERMISSOES_USUARIO_usuario_id_fkey"
       FOREIGN KEY (usuario_id) REFERENCES public."TB.CALENDARIO_USUARIOS"(id) ON DELETE CASCADE;
   END IF;
 END $$;
@@ -1028,6 +1035,7 @@ export async function createCalendarUserInSupabase(user: {
 
     if (upsertErr) {
       console.warn('[Supabase] Erro ao cadastrar/atualizar usuário em TB.CALENDARIO_USUARIOS:', upsertErr.message);
+      return false;
     }
 
     if (user.escopos && user.escopos.length > 0 && user.perfil !== 'ADMINISTRADOR') {
