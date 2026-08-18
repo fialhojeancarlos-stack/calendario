@@ -937,12 +937,17 @@ export async function fetchCalendarUsersFromSupabase() {
     // Return combined users array
     const combinedUsers = Array.from(userMap.values());
     if (combinedUsers.length > 0) {
+      lastSupabaseFetchError = null;
       return combinedUsers;
     }
 
-    if (tableErrMessage) {
-      lastSupabaseFetchError = tableErrMessage;
+    // If query succeeded with 0 users and no connection failure, return empty array so server can auto-seed
+    if (!tableErrMessage || tableErrMessage.includes('does not exist') || tableErrMessage.includes('não existe')) {
+      lastSupabaseFetchError = null;
+      return [];
     }
+
+    lastSupabaseFetchError = tableErrMessage;
     return null;
   } catch (err: any) {
     console.warn('[Supabase] Erro ao carregar usuários:', err.message);
