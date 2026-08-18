@@ -19,6 +19,20 @@ function isPlaceholder(value: string): boolean {
   );
 }
 
+function parseJwtRole(token: string): string | null {
+  try {
+    const parts = token.split('.');
+    if (parts.length === 3) {
+      const payloadStr = Buffer.from(parts[1], 'base64').toString('utf8');
+      const payload = JSON.parse(payloadStr);
+      return payload.role || null;
+    }
+  } catch (e) {
+    // ignore
+  }
+  return null;
+}
+
 // Get Supabase credentials strictly from process.env (or VITE_* equivalents), stripping quotes and placeholders
 function getSupabaseCredentialsFromEnv() {
   let rawUrl = (
@@ -29,28 +43,29 @@ function getSupabaseCredentialsFromEnv() {
     ''
   ).trim();
 
-  let rawKey = (
-    process.env.SUPABASE_SERVICE_ROLE_KEY ||
-    process.env.SUPABASE_ANON_KEY ||
-    process.env.VITE_SUPABASE_ANON_KEY ||
-    process.env.SUPABASE_KEY ||
-    process.env.SUPABASE_API_KEY ||
-    process.env.VITE_SUPABASE_KEY ||
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-    process.env.REACT_APP_SUPABASE_ANON_KEY ||
-    ''
-  ).trim();
-
-  // Clean leading/trailing spaces, newlines, tabs, and single/double quotes
-  rawUrl = rawUrl.replace(/^["'\s\r\n]+|["'\s\r\n]+$/g, '');
-  rawKey = rawKey.replace(/^["'\s\r\n]+|["'\s\r\n]+$/g, '');
-
-  rawUrl = rawUrl.replace(/\/+$/, '');
-
+  // Clean URL
+  rawUrl = rawUrl.replace(/^["'\s\r\n]+|["'\s\r\n]+$/g, '').replace(/\/+$/, '');
   const url = isPlaceholder(rawUrl) ? '' : rawUrl;
-  const key = isPlaceholder(rawKey) ? '' : rawKey;
 
-  return { url, key };
+  // Collect all candidate keys from environment variables
+  const candidates = [
+    process.env.SUPABASE_SERVICE_ROLE_KEY,
+    process.env.SUPABASE_ANON_KEY,
+    process.env.VITE_SUPABASE_ANON_KEY,
+    process.env.SUPABASE_KEY,
+    process.env.SUPABASE_API_KEY,
+    process.env.VITE_SUPABASE_KEY,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    process.env.REACT_APP_SUPABASE_ANON_KEY,
+  ]
+    .filter(Boolean)
+    .map((k) => (k || '').trim().replace(/^["'\s\r\n]+|["'\s\r\n]+$/g, ''))
+    .filter((k) => k.length > 0 && !isPlaceholder(k));
+
+  // Auto-detect and prefer key with role === 'service_role' (or fallback to first candidate)
+  let bestKey = candidates.find((k) => parseJwtRole(k) === 'service_role') || candidates[0] || '';
+
+  return { url, key: bestKey };
 }
 
 let supabaseClient: SupabaseClient | null = null;
