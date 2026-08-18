@@ -772,6 +772,9 @@ NOTIFY pgrst, 'reload schema';
 `;
 
 export async function fetchCalendarUsersFromSupabase() {
+  if (!supabaseClient) {
+    initSupabaseClient();
+  }
   if (!supabaseClient) return null;
 
   try {

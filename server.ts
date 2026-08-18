@@ -426,14 +426,30 @@ let inMemoryUsers = [
 app.get('/api/users', async (req, res) => {
   try {
     const supabaseUsers = await fetchCalendarUsersFromSupabase();
-    if (supabaseUsers && supabaseUsers.length > 0) {
+    if (supabaseUsers !== null) {
+      if (supabaseUsers.length === 0) {
+        // Table exists in Supabase DB but is currently empty - auto populate initial admin
+        const initialAdmin = {
+          nome: 'Jean Silva (Administrador)',
+          email: 'jean.silva@azi.com.br',
+          perfil: 'ADMINISTRADOR' as const,
+          escopos: ['menu_dashboard', 'menu_eventos', 'menu_relatorios', 'menu_configuracoes'],
+        };
+        await createCalendarUserInSupabase(initialAdmin);
+        const reFetched = await fetchCalendarUsersFromSupabase();
+        return res.json({ users: reFetched || [], source: 'supabase' });
+      }
       return res.json({ users: supabaseUsers, source: 'supabase' });
     }
   } catch (err: any) {
     console.warn('[Server] Supabase users check failed, returning memory list:', err.message);
   }
 
-  res.json({ users: inMemoryUsers, source: 'local' });
+  res.json({
+    users: inMemoryUsers,
+    source: 'local',
+    warning: 'Supabase DB não conectado ou tabela TB.CALENDARIO_USUARIOS indisponível. Verifique se as variáveis SUPABASE_URL e SUPABASE_ANON_KEY (ou SUPABASE_SERVICE_ROLE_KEY) estão configuradas no EasyPanel.',
+  });
 });
 
 // POST /api/users/sync-profile - Sync and register logged-in user profile
