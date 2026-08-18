@@ -1181,8 +1181,17 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
+  const server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`[Calendário de Entregas Jira] Servidor rodando em http://0.0.0.0:${PORT}`);
+  });
+
+  server.on('error', (err: any) => {
+    if ((err.code === 'EACCES' || err.code === 'EADDRINUSE') && PORT !== 3000) {
+      console.warn(`[Porta ${PORT} falhou (${err.code})]. Tentando porta padrão 3000...`);
+      app.listen(3000, '0.0.0.0', () => {
+        console.log(`[Calendário de Entregas Jira] Servidor rodando na porta de fallback http://0.0.0.0:3000`);
+      });
+    }
   });
 
   // Background load persisted issues from Supabase
