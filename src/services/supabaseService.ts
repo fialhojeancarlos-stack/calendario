@@ -56,23 +56,18 @@ function getSupabaseCredentialsFromEnv() {
 let supabaseClient: SupabaseClient | null = null;
 
 export function getSupabaseConfig() {
-  if (!supabaseClient) {
-    initSupabaseClient();
-  }
+  const client = initSupabaseClient();
   const { url, key } = getSupabaseCredentialsFromEnv();
   return {
     url,
     hasKey: Boolean(key),
-    isConnected: Boolean(supabaseClient),
+    isConnected: Boolean(client),
     lastError: lastSupabaseFetchError,
   };
 }
 
 export function getSupabaseServerClient(): SupabaseClient | null {
-  if (!supabaseClient) {
-    initSupabaseClient();
-  }
-  return supabaseClient;
+  return initSupabaseClient();
 }
 
 export function updateSupabaseConfig() {
@@ -80,7 +75,7 @@ export function updateSupabaseConfig() {
   initSupabaseClient();
 }
 
-function initSupabaseClient() {
+function initSupabaseClient(): SupabaseClient | null {
   const { url, key } = getSupabaseCredentialsFromEnv();
 
   if (url && key) {
@@ -93,12 +88,15 @@ function initSupabaseClient() {
         auth: { persistSession: false },
       });
       console.log('[Supabase] Cliente inicializado via .env para:', formattedUrl);
+      return supabaseClient;
     } catch (err: any) {
       console.warn('[Supabase] Aviso ao inicializar cliente via .env:', err.message);
       supabaseClient = null;
+      return null;
     }
   } else {
     supabaseClient = null;
+    return null;
   }
 }
 
