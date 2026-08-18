@@ -24,6 +24,8 @@ function getSupabaseCredentialsFromEnv() {
   let rawUrl = (
     process.env.SUPABASE_URL ||
     process.env.VITE_SUPABASE_URL ||
+    process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    process.env.REACT_APP_SUPABASE_URL ||
     ''
   ).trim();
 
@@ -31,16 +33,17 @@ function getSupabaseCredentialsFromEnv() {
     process.env.SUPABASE_SERVICE_ROLE_KEY ||
     process.env.SUPABASE_ANON_KEY ||
     process.env.VITE_SUPABASE_ANON_KEY ||
+    process.env.SUPABASE_KEY ||
+    process.env.SUPABASE_API_KEY ||
+    process.env.VITE_SUPABASE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    process.env.REACT_APP_SUPABASE_ANON_KEY ||
     ''
   ).trim();
 
-  // Strip wrapping single or double quotes
-  if ((rawUrl.startsWith('"') && rawUrl.endsWith('"')) || (rawUrl.startsWith("'") && rawUrl.endsWith("'"))) {
-    rawUrl = rawUrl.slice(1, -1).trim();
-  }
-  if ((rawKey.startsWith('"') && rawKey.endsWith('"')) || (rawKey.startsWith("'") && rawKey.endsWith("'"))) {
-    rawKey = rawKey.slice(1, -1).trim();
-  }
+  // Clean leading/trailing spaces, newlines, tabs, and single/double quotes
+  rawUrl = rawUrl.replace(/^["'\s\r\n]+|["'\s\r\n]+$/g, '');
+  rawKey = rawKey.replace(/^["'\s\r\n]+|["'\s\r\n]+$/g, '');
 
   rawUrl = rawUrl.replace(/\/+$/, '');
 
@@ -58,6 +61,7 @@ export function getSupabaseConfig() {
     url,
     hasKey: Boolean(key),
     isConnected: Boolean(supabaseClient),
+    lastError: lastSupabaseFetchError,
   };
 }
 
@@ -771,30 +775,60 @@ CREATE TRIGGER on_auth_user_created_calendar
 NOTIFY pgrst, 'reload schema';
 `;
 
+export let lastSupabaseFetchError: string | null = null;
+
 export async function fetchCalendarUsersFromSupabase() {
+  lastSupabaseFetchError = null;
   if (!supabaseClient) {
     initSupabaseClient();
   }
-  if (!supabaseClient) return null;
+  if (!supabaseClient) {
+    lastSupabaseFetchError = 'Cliente Supabase não inicializado (verifique SUPABASE_URL e SUPABASE_ANON_KEY / SUPABASE_SERVICE_ROLE_KEY no EasyPanel).';
+    return null;
+  }
 
   try {
-    const { data: users, error: usersErr } = await supabaseClient
-      .from('TB.CALENDARIO_USUARIOS')
-      .select('*')
-      .order('created_at', { ascending: true });
+    const possibleUserTables = [
+      'TB.CALENDARIO_USUARIOS',
+      'tb.calendario_usuarios',
+      'TB.CALENDARIO_USUARIO',
+      'tb.calendario_usuario',
+      'calendario_usuarios',
+      'calendario_usuario',
+    ];
 
-    if (usersErr || !users) {
-      console.warn('[Supabase] Tabela TB.CALENDARIO_USUARIOS ainda não disponível:', usersErr?.message);
+    let users: any[] | null = null;
+    let successfulTable = '';
+
+    for (const tableName of possibleUserTables) {
+      const { data, error } = await supabaseClient
+        .from(tableName)
+        .select('*')
+        .order('created_at', { ascending: true });
+
+      if (!error && data) {
+        users = data;
+        successfulTable = tableName;
+        break;
+      } else if (error) {
+        lastSupabaseFetchError = error.message;
+      }
+    }
+
+    if (!users) {
+      console.warn('[Supabase] Tabela de usuários não disponível no Supabase:', lastSupabaseFetchError);
       return null;
     }
 
-    const { data: scopesData } = await supabaseClient
-      .from('TB.CALENDARIO_ESCOPOS')
-      .select('*');
+    let scopesData = (await supabaseClient.from('TB.CALENDARIO_ESCOPOS').select('*')).data;
+    if (!scopesData) {
+      scopesData = (await supabaseClient.from('tb.calendario_escopos').select('*')).data;
+    }
 
-    const { data: permissionsData } = await supabaseClient
-      .from('TB.CALENDARIO_PERMISSOES_USUARIO')
-      .select('*');
+    let permissionsData = (await supabaseClient.from('TB.CALENDARIO_PERMISSOES_USUARIO').select('*')).data;
+    if (!permissionsData) {
+      permissionsData = (await supabaseClient.from('tb.calendario_permissoes_usuario').select('*')).data;
+    }
 
     const scopeMap = new Map<string, string>();
     if (scopesData) {

@@ -75,6 +75,7 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [roleFilter, setRoleFilter] = useState<string>('ALL');
   const [dataSource, setDataSource] = useState<string>('local');
+  const [warningMsg, setWarningMsg] = useState<string | null>(null);
 
   // Edit Permissions Modal State
   const [selectedUser, setSelectedUser] = useState<UserProfileRecord | null>(null);
@@ -102,6 +103,11 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({
       const res = await fetchUsersList();
       setUsers(res.users);
       setDataSource(res.source);
+      if (res.warning) {
+        setWarningMsg(res.warning);
+      } else {
+        setWarningMsg(null);
+      }
     } catch (err: any) {
       console.warn('Erro ao carregar usuários:', err.message);
     } finally {
@@ -307,6 +313,25 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({
           </button>
         </div>
       </div>
+
+      {dataSource !== 'supabase' && (
+        <div className="rounded-md border border-amber-800/60 bg-amber-950/40 p-3 text-xs text-amber-200 flex items-start gap-2.5">
+          <AlertCircle className="h-4 w-4 text-amber-400 shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <span className="font-bold block text-amber-300">Atenção: Operando em Modo Local (Contingência)</span>
+            <p className="text-[11px] text-amber-200/80 mt-0.5">
+              {warningMsg || 'A conexão com a tabela TB.CALENDARIO_USUARIOS do Supabase não pôde ser estabelecida. Os usuários e IDs exibidos abaixo são fictícios de demonstração.'}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={loadUsers}
+            className="px-2 py-1 bg-amber-900/50 hover:bg-amber-800/60 text-amber-100 rounded text-[11px] font-medium border border-amber-700/50 cursor-pointer shrink-0"
+          >
+            Reverificar Conexão
+          </button>
+        </div>
+      )}
 
       {/* Search & Role Filter Toolbar */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-[#161b22] p-3 rounded-lg border border-[#30363d]">

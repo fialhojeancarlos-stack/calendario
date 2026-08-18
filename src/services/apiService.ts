@@ -99,6 +99,7 @@ export interface SupabaseStatusResponse {
   cutoffDate: string;
   persistedIssueCount: number;
   sqlSchema: string;
+  lastError?: string;
 }
 
 export async function fetchSupabaseStatus(): Promise<SupabaseStatusResponse> {
@@ -159,7 +160,7 @@ export async function syncUnscheduledEpics(): Promise<{
   return await res.json();
 }
 
-export async function fetchUsersList(): Promise<{ users: import('../types').UserProfileRecord[]; source: string }> {
+export async function fetchUsersList(): Promise<{ users: import('../types').UserProfileRecord[]; source: string; warning?: string }> {
   const res = await fetch('/api/users');
   if (!res.ok) {
     throw new Error('Falha ao carregar lista de usuários');

@@ -382,6 +382,13 @@ export const AdminSettingsModal: React.FC<AdminSettingsModalProps> = ({
                     )}
                   </div>
                 </div>
+
+                {supabaseStatus?.lastError && (
+                  <div className="col-span-1 sm:col-span-2 rounded-md border border-rose-800 bg-rose-950/40 p-3 text-xs text-rose-200">
+                    <span className="font-bold text-rose-300 block">Diagnóstico de Erro do Supabase:</span>
+                    <span className="font-mono text-[11px] block mt-1">{supabaseStatus.lastError}</span>
+                  </div>
+                )}
               </div>
             </div>
 

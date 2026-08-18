@@ -16,6 +16,7 @@ import {
   fetchCalendarUsersFromSupabase,
   createCalendarUserInSupabase,
   updateCalendarUserPermissionsInSupabase,
+  lastSupabaseFetchError,
 } from './src/services/supabaseService.js';
 import { resolveEpicSprintsFromStories } from './src/services/epicSprintResolverService.js';
 
@@ -448,7 +449,9 @@ app.get('/api/users', async (req, res) => {
   res.json({
     users: inMemoryUsers,
     source: 'local',
-    warning: 'Supabase DB não conectado ou tabela TB.CALENDARIO_USUARIOS indisponível. Verifique se as variáveis SUPABASE_URL e SUPABASE_ANON_KEY (ou SUPABASE_SERVICE_ROLE_KEY) estão configuradas no EasyPanel.',
+    warning: lastSupabaseFetchError
+      ? `Supabase DB não conectado (${lastSupabaseFetchError}). Verifique SUPABASE_URL e SUPABASE_ANON_KEY / SUPABASE_SERVICE_ROLE_KEY no EasyPanel.`
+      : 'Supabase DB não conectado ou tabela TB.CALENDARIO_USUARIOS indisponível. Verifique se as variáveis SUPABASE_URL e SUPABASE_ANON_KEY (ou SUPABASE_SERVICE_ROLE_KEY) estão configuradas no EasyPanel.',
   });
 });
 
