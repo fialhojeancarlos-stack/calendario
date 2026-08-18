@@ -25,7 +25,11 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 
-const PORT = 3000;
+const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
+
+// Healthcheck endpoints for EasyPanel / Docker container health checks
+app.get('/health', (req, res) => res.status(200).json({ status: 'ok', uptime: process.uptime() }));
+app.get('/api/health', (req, res) => res.status(200).json({ status: 'ok', uptime: process.uptime() }));
 
 // Configuration State (Strictly loaded from .env)
 let fieldOverrides = {
@@ -1161,23 +1165,24 @@ async function startServer() {
     });
   }
 
-  // Load persisted issues from Supabase on startup if available
-  try {
-    const persisted = await fetchIssuesFromSupabase();
-    if (persisted.length > 0) {
-      const mapByKey = new Map<string, any>();
-      cachedIssues.forEach((i) => mapByKey.set(i.issue_key, i));
-      persisted.forEach((i) => mapByKey.set(i.issue_key, i));
-      cachedIssues = Array.from(mapByKey.values());
-      console.log(`[Supabase] ${persisted.length} chamados históricos (>= 01/07/2026) carregados do Supabase.`);
-    }
-  } catch (e: any) {
-    console.warn('[Supabase] Não foi possível carregar chamados iniciais do Supabase:', e.message);
-  }
-
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`[Calendário de Entregas Jira] Servidor rodando em http://0.0.0.0:${PORT}`);
   });
+
+  // Background load persisted issues from Supabase
+  fetchIssuesFromSupabase()
+    .then((persisted) => {
+      if (persisted && persisted.length > 0) {
+        const mapByKey = new Map<string, any>();
+        cachedIssues.forEach((i) => mapByKey.set(i.issue_key, i));
+        persisted.forEach((i) => mapByKey.set(i.issue_key, i));
+        cachedIssues = Array.from(mapByKey.values());
+        console.log(`[Supabase] ${persisted.length} chamados históricos (>= 01/07/2026) carregados do Supabase.`);
+      }
+    })
+    .catch((e: any) => {
+      console.warn('[Supabase] Não foi possível carregar chamados iniciais do Supabase:', e?.message || e);
+    });
 
   // Background Automatic Synchronization Job (Runs every 5 minutes)
   setInterval(async () => {
