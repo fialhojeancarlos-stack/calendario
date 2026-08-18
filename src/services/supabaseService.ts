@@ -792,17 +792,52 @@ export async function fetchCalendarUsersFromSupabase() {
   }
 
   try {
+    const userMap = new Map<string, any>();
+
+    // 1. Fetch registered users from Supabase Auth (auth.users)
+    try {
+      if (supabaseClient.auth && supabaseClient.auth.admin) {
+        const { data: authData, error: authErr } = await supabaseClient.auth.admin.listUsers();
+        if (!authErr && authData?.users && authData.users.length > 0) {
+          authData.users.forEach((authUser: any) => {
+            const email = (authUser.email || '').toLowerCase().trim();
+            if (email) {
+              const isJean = email.includes('jean.silva');
+              userMap.set(email, {
+                id: authUser.id,
+                nome: authUser.user_metadata?.full_name || authUser.user_metadata?.nome || authUser.user_metadata?.name || (email ? email.split('@')[0].replace('.', ' ') : 'Usuário'),
+                email: email,
+                perfil: isJean ? 'ADMINISTRADOR' : 'VISUALIZADOR',
+                status: 'ATIVO',
+                created_at: authUser.created_at || new Date().toISOString(),
+                updated_at: authUser.updated_at || authUser.created_at || new Date().toISOString(),
+                escopos: isJean
+                  ? ['menu_dashboard', 'menu_eventos', 'menu_relatorios', 'menu_configuracoes']
+                  : ['menu_dashboard'],
+              });
+            }
+          });
+        } else if (authErr) {
+          console.warn('[Supabase] Aviso ao buscar auth.users:', authErr.message);
+        }
+      }
+    } catch (e: any) {
+      console.warn('[Supabase] auth.admin.listUsers erro:', e.message);
+    }
+
+    // 2. Fetch users from TB.CALENDARIO_USUARIOS (trying multiple table variants)
     const possibleUserTables = [
       'TB.CALENDARIO_USUARIOS',
       'tb.calendario_usuarios',
+      'tb_calendario_usuarios',
       'TB.CALENDARIO_USUARIO',
       'tb.calendario_usuario',
       'calendario_usuarios',
       'calendario_usuario',
     ];
 
-    let users: any[] | null = null;
-    let successfulTable = '';
+    let dbUsers: any[] | null = null;
+    let tableErrMessage = '';
 
     for (const tableName of possibleUserTables) {
       const { data, error } = await supabaseClient
@@ -811,118 +846,92 @@ export async function fetchCalendarUsersFromSupabase() {
         .order('created_at', { ascending: true });
 
       if (!error && data) {
-        users = data;
-        successfulTable = tableName;
+        dbUsers = data;
         break;
       } else if (error) {
-        lastSupabaseFetchError = error.message;
+        tableErrMessage = error.message;
       }
     }
 
-    if (!users) {
-      console.warn('[Supabase] Tabela de usuários não disponível no Supabase:', lastSupabaseFetchError);
-      return null;
-    }
-
-    let scopesData = (await supabaseClient.from('TB.CALENDARIO_ESCOPOS').select('*')).data;
-    if (!scopesData) {
-      scopesData = (await supabaseClient.from('tb.calendario_escopos').select('*')).data;
-    }
-
-    let permissionsData = (await supabaseClient.from('TB.CALENDARIO_PERMISSOES_USUARIO').select('*')).data;
-    if (!permissionsData) {
-      permissionsData = (await supabaseClient.from('tb.calendario_permissoes_usuario').select('*')).data;
-    }
-
+    // 3. Fetch scopes and permissions from DB if available
     const scopeMap = new Map<string, string>();
-    if (scopesData) {
-      scopesData.forEach((s: any) => {
-        scopeMap.set(s.id, s.nome_escopo);
-      });
-    }
-
     const userScopeMap = new Map<string, string[]>();
-    if (permissionsData) {
-      permissionsData.forEach((p: any) => {
-        const scopeName = scopeMap.get(p.escopo_id);
-        if (scopeName) {
-          const list = userScopeMap.get(p.usuario_id) || [];
-          if (!list.includes(scopeName)) {
-            list.push(scopeName);
+
+    try {
+      let scopesData = (await supabaseClient.from('TB.CALENDARIO_ESCOPOS').select('*')).data;
+      if (!scopesData) {
+        scopesData = (await supabaseClient.from('tb.calendario_escopos').select('*')).data;
+      }
+      if (scopesData) {
+        scopesData.forEach((s: any) => scopeMap.set(s.id, s.nome_escopo));
+      }
+
+      let permissionsData = (await supabaseClient.from('TB.CALENDARIO_PERMISSOES_USUARIO').select('*')).data;
+      if (!permissionsData) {
+        permissionsData = (await supabaseClient.from('tb.calendario_permissoes_usuario').select('*')).data;
+      }
+      if (permissionsData) {
+        permissionsData.forEach((p: any) => {
+          const scopeName = scopeMap.get(p.escopo_id);
+          if (scopeName) {
+            const list = userScopeMap.get(p.usuario_id) || [];
+            if (!list.includes(scopeName)) list.push(scopeName);
+            userScopeMap.set(p.usuario_id, list);
           }
-          userScopeMap.set(p.usuario_id, list);
+        });
+      }
+    } catch (e) {
+      // Ignore scope query errors
+    }
+
+    // Merge DB users into userMap
+    if (dbUsers && dbUsers.length > 0) {
+      dbUsers.forEach((u: any) => {
+        let rawEmail = u.email;
+        if (!rawEmail && u.nome && u.nome.includes('@')) rawEmail = u.nome;
+        const cleanEmail = (rawEmail || '').toLowerCase().trim();
+        const userKey = cleanEmail || String(u.id);
+
+        const dbScopes = userScopeMap.get(u.id) || u.escopos || (cleanEmail.includes('jean.silva') ? ['menu_dashboard', 'menu_eventos', 'menu_relatorios', 'menu_configuracoes'] : ['menu_dashboard']);
+
+        const existing = userMap.get(userKey);
+        if (existing) {
+          userMap.set(userKey, {
+            ...existing,
+            id: u.id && u.id.length > 10 ? u.id : existing.id,
+            nome: u.nome || existing.nome,
+            perfil: cleanEmail.includes('jean.silva') ? 'ADMINISTRADOR' : (u.perfil || existing.perfil),
+            status: u.status || existing.status || 'ATIVO',
+            escopos: dbScopes.length > 0 ? dbScopes : existing.escopos,
+          });
+        } else {
+          userMap.set(userKey, {
+            id: String(u.id),
+            nome: u.nome || (cleanEmail ? cleanEmail.split('@')[0].replace('.', ' ') : 'Usuário'),
+            email: cleanEmail || String(u.id),
+            perfil: cleanEmail.includes('jean.silva') ? 'ADMINISTRADOR' : (u.perfil || 'VISUALIZADOR'),
+            status: u.status || 'ATIVO',
+            created_at: u.created_at || new Date().toISOString(),
+            updated_at: u.updated_at || new Date().toISOString(),
+            escopos: dbScopes,
+          });
         }
       });
     }
 
-    // Deduplicate and resolve real user IDs by email
-    const emailToUserMap = new Map<string, any>();
-    const obsoleteIdsToDelete: string[] = [];
-
-    users.forEach((u: any) => {
-      let rawEmail = u.email;
-      if (!rawEmail && u.nome && u.nome.includes('@')) {
-        rawEmail = u.nome;
-      }
-      const cleanEmail = (rawEmail || '').toLowerCase().trim();
-      const userKey = cleanEmail || String(u.id);
-
-      const isFictitious = String(u.id).startsWith('usr-admin-') || String(u.id).startsWith('usr-andre-') || String(u.id) === 'usr-fallback';
-
-      if (!emailToUserMap.has(userKey)) {
-        emailToUserMap.set(userKey, { ...u, cleanEmail, isFictitious });
-      } else {
-        const existing = emailToUserMap.get(userKey);
-        // If current record is REAL (not fictitious) and existing is fictitious, replace existing
-        if (!isFictitious && existing.isFictitious) {
-          obsoleteIdsToDelete.push(existing.id);
-          emailToUserMap.set(userKey, { ...u, cleanEmail, isFictitious });
-        } else if (isFictitious && !existing.isFictitious) {
-          obsoleteIdsToDelete.push(u.id);
-        }
-      }
-    });
-
-    // Clean up obsolete fictitious duplicate rows in DB if found
-    if (obsoleteIdsToDelete.length > 0) {
-      supabaseClient
-        .from('TB.CALENDARIO_USUARIOS')
-        .delete()
-        .in('id', obsoleteIdsToDelete)
-        .then(({ error }) => {
-          if (error) console.warn('[Supabase] Cleanup duplicate user rows error:', error.message);
-        });
+    // Return combined users array
+    const combinedUsers = Array.from(userMap.values());
+    if (combinedUsers.length > 0) {
+      return combinedUsers;
     }
 
-    return Array.from(emailToUserMap.values()).map((u: any) => {
-      const cleanEmail = u.cleanEmail;
-      const isJeanSilva = cleanEmail.includes('jean.silva');
-      const perfil = isJeanSilva ? 'ADMINISTRADOR' : (u.perfil || 'VISUALIZADOR');
-
-      let escopos: string[] = [];
-      if (perfil === 'ADMINISTRADOR') {
-        escopos = ['menu_dashboard', 'menu_eventos', 'menu_relatorios', 'menu_configuracoes'];
-      } else if (userScopeMap.has(u.id) && userScopeMap.get(u.id)!.length > 0) {
-        escopos = userScopeMap.get(u.id)!;
-      } else if (perfil === 'GESTOR') {
-        escopos = ['menu_dashboard', 'menu_eventos', 'menu_relatorios'];
-      } else {
-        escopos = ['menu_dashboard'];
-      }
-
-      return {
-        id: String(u.id),
-        nome: u.nome || (cleanEmail ? cleanEmail.split('@')[0].replace('.', ' ') : 'Usuário'),
-        email: cleanEmail || String(u.id),
-        perfil,
-        status: u.status || 'ATIVO',
-        created_at: u.created_at || new Date().toISOString(),
-        updated_at: u.updated_at || new Date().toISOString(),
-        escopos,
-      };
-    });
+    if (tableErrMessage) {
+      lastSupabaseFetchError = tableErrMessage;
+    }
+    return null;
   } catch (err: any) {
-    console.warn('[Supabase] Erro ao buscar usuários:', err.message);
+    console.warn('[Supabase] Erro ao carregar usuários:', err.message);
+    lastSupabaseFetchError = err.message;
     return null;
   }
 }
