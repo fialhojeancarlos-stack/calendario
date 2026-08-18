@@ -22,6 +22,7 @@ import { resolveEpicSprintsFromStories } from './src/services/epicSprintResolver
 
 
 dotenv.config();
+updateSupabaseConfig();
 
 const app = express();
 app.use(express.json());

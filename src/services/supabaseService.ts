@@ -56,6 +56,9 @@ function getSupabaseCredentialsFromEnv() {
 let supabaseClient: SupabaseClient | null = null;
 
 export function getSupabaseConfig() {
+  if (!supabaseClient) {
+    initSupabaseClient();
+  }
   const { url, key } = getSupabaseCredentialsFromEnv();
   return {
     url,
@@ -66,6 +69,9 @@ export function getSupabaseConfig() {
 }
 
 export function getSupabaseServerClient(): SupabaseClient | null {
+  if (!supabaseClient) {
+    initSupabaseClient();
+  }
   return supabaseClient;
 }
 
