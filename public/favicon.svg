@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <rect x="4" y="4" width="120" height="120" rx="32" fill="#0052FF" />
+  <!-- Calendar Container -->
+  <rect x="32" y="40" width="64" height="56" rx="10" fill="none" stroke="#FFFFFF" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" />
+  <!-- Horizontal Header Line -->
+  <line x1="32" y1="58" x2="96" y2="58" stroke="#FFFFFF" stroke-width="5.5" stroke-linecap="round" />
+  <!-- Top Binder Rings -->
+  <line x1="50" y1="30" x2="50" y2="46" stroke="#FFFFFF" stroke-width="6.5" stroke-linecap="round" />
+  <line x1="78" y1="30" x2="78" y2="46" stroke="#FFFFFF" stroke-width="6.5" stroke-linecap="round" />
+</svg>

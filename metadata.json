@@ -1,0 +1,6 @@
+{
+  "name": "Calendário de Entregas",
+  "description": "Calendário de entregas integrado com chamados do Jira Software por data prevista",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
