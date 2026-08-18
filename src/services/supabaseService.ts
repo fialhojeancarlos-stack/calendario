@@ -69,6 +69,7 @@ function getSupabaseCredentialsFromEnv() {
 }
 
 let supabaseClient: SupabaseClient | null = null;
+export let lastSupabaseFetchError: string | null = null;
 
 export function getSupabaseConfig() {
   const client = initSupabaseClient();
@@ -103,14 +104,20 @@ function initSupabaseClient(): SupabaseClient | null {
         auth: { persistSession: false },
       });
       console.log('[Supabase] Cliente inicializado via .env para:', formattedUrl);
+      // Successful (re)initialization invalidates any previously cached error
+      lastSupabaseFetchError = null;
       return supabaseClient;
     } catch (err: any) {
       console.warn('[Supabase] Aviso ao inicializar cliente via .env:', err.message);
+      lastSupabaseFetchError = `Falha ao criar cliente Supabase: ${err.message}`;
       supabaseClient = null;
       return null;
     }
   } else {
     supabaseClient = null;
+    lastSupabaseFetchError = !url
+      ? 'SUPABASE_URL não encontrada (ou vazia/placeholder) nas variáveis de ambiente do servidor.'
+      : 'Nenhuma chave válida encontrada (SUPABASE_SERVICE_ROLE_KEY / SUPABASE_ANON_KEY) nas variáveis de ambiente do servidor.';
     return null;
   }
 }
@@ -794,17 +801,15 @@ CREATE TRIGGER on_auth_user_created_calendar
 NOTIFY pgrst, 'reload schema';
 `;
 
-export let lastSupabaseFetchError: string | null = null;
-
 export async function fetchCalendarUsersFromSupabase() {
-  lastSupabaseFetchError = null;
   if (!supabaseClient) {
     initSupabaseClient();
   }
   if (!supabaseClient) {
-    lastSupabaseFetchError = 'Cliente Supabase não inicializado (verifique SUPABASE_URL e SUPABASE_ANON_KEY / SUPABASE_SERVICE_ROLE_KEY no EasyPanel).';
+    // initSupabaseClient() already populated lastSupabaseFetchError with the specific cause
     return null;
   }
+  lastSupabaseFetchError = null;
 
   try {
     const userMap = new Map<string, any>();
