@@ -46,10 +46,10 @@ export const DayView: React.FC<DayViewProps> = ({
         }`}
       >
         <div>
-          <h2 className={`text-xl font-bold ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
+          <h2 className={`text-xl font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
             {formattedDate}
           </h2>
-          <p className={`text-xs mt-1 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+          <p className={`text-xs mt-1 ${isLight ? 'text-slate-500' : 'text-slate-300 font-medium'}`}>
             Visão detalhada por projeto para o dia selecionado
           </p>
         </div>
@@ -58,10 +58,10 @@ export const DayView: React.FC<DayViewProps> = ({
           className={`flex items-center gap-2 rounded-md px-3 py-1.5 border font-semibold text-xs ${
             isLight
               ? 'bg-blue-50 border-blue-200 text-blue-900'
-              : 'bg-[#161b22] border-[#30363d] text-slate-200'
+              : 'bg-[#161b22] border-[#30363d] text-white font-bold'
           }`}
         >
-          <CalendarCheck2 className="h-4 w-4 text-blue-600" />
+          <CalendarCheck2 className="h-4 w-4 text-blue-600 dark:text-blue-400" />
           <span>
             {issues.length} {issues.length === 1 ? 'Entrega prevista' : 'Entrega(s) prevista(s)'}
           </span>
@@ -83,15 +83,15 @@ export const DayView: React.FC<DayViewProps> = ({
                   isLight ? 'border-slate-200' : 'border-[#1e293b]'
                 }`}
               >
-                <FolderKanban className="h-4 w-4 text-blue-600" />
-                <h3 className={`text-sm font-bold ${isLight ? 'text-slate-800' : 'text-slate-200'}`}>
+                <FolderKanban className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                <h3 className={`text-sm font-bold ${isLight ? 'text-slate-800' : 'text-white'}`}>
                   {projectName}
                 </h3>
                 <span
                   className={`text-xs font-bold px-2 py-0.5 rounded border ${
                     isLight
                       ? 'bg-slate-100 border-slate-300 text-slate-700'
-                      : 'bg-[#161b22] border-[#30363d] text-slate-400'
+                      : 'bg-[#161b22] border-[#30363d] text-white font-bold'
                   }`}
                 >
                   {projectIssues.length}

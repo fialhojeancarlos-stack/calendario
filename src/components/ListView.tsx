@@ -104,11 +104,11 @@ export const ListView: React.FC<ListViewProps> = ({
     <div className="flex-1 flex flex-col min-h-0 w-full overflow-hidden">
       {/* Table Header Summary & Export Actions */}
       <div className={`px-4 py-2.5 border-b flex flex-wrap items-center justify-between gap-2 text-xs font-semibold ${
-        isLight ? 'bg-slate-50 border-slate-200 text-slate-700' : 'bg-[#161b22] border-[#1e293b] text-slate-300'
+        isLight ? 'bg-slate-50 border-slate-200 text-slate-700' : 'bg-[#161b22] border-[#1e293b] text-white'
       }`}>
         <div className="flex items-center gap-2">
-          <span>Exibindo <strong className="text-blue-600 dark:text-blue-400">{sortedIssues.length}</strong> chamados em ordem cronológica de data prevista</span>
-          <span className="text-[11px] font-normal text-slate-500 dark:text-slate-400 hidden sm:inline">(clique na linha para ver as Histórias vinculadas)</span>
+          <span>Exibindo <strong className="text-blue-600 dark:text-blue-400 font-extrabold">{sortedIssues.length}</strong> chamados em ordem cronológica de data prevista</span>
+          <span className="text-[11px] font-normal text-slate-500 dark:text-slate-200 hidden sm:inline">(clique na linha para ver as Histórias vinculadas)</span>
         </div>
 
         {/* Export Buttons */}
@@ -144,56 +144,56 @@ export const ListView: React.FC<ListViewProps> = ({
         ) : (
           <table className="w-full text-left text-xs border-collapse table-fixed">
             <thead className={`sticky top-0 z-10 text-[11px] font-bold uppercase tracking-wider border-b ${
-              isLight ? 'bg-slate-100 border-slate-200 text-slate-600' : 'bg-[#0d1117] border-[#1e293b] text-slate-400'
+              isLight ? 'bg-slate-100 border-slate-200 text-slate-600' : 'bg-[#161b22] border-[#1e293b] text-white font-bold'
             }`}>
               <tr>
                 <th className="w-7 px-1 py-2.5 text-center"></th>
                 <th
                   onClick={() => handleSort('due_date')}
-                  className="w-28 md:w-32 px-2.5 py-2.5 cursor-pointer hover:text-blue-600 select-none whitespace-nowrap"
+                  className="w-28 px-2.5 py-2.5 cursor-pointer hover:text-blue-600 select-none whitespace-nowrap"
                   title="Ordenar por Data Prevista"
                 >
-                  <div className="flex items-center justify-center gap-1">
-                    <Calendar className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                  <div className="flex items-center gap-1">
+                    <Calendar className="h-3.5 w-3.5 text-slate-400 dark:text-slate-200 shrink-0" />
                     <span>Data Prevista</span>
                     <ArrowUpDown className="h-3 w-3 opacity-60 shrink-0" />
                   </div>
                 </th>
                 <th
                   onClick={() => handleSort('issue_key')}
-                  className="w-28 px-2.5 py-2.5 cursor-pointer hover:text-blue-600 select-none whitespace-nowrap"
+                  className="w-24 px-2.5 py-2.5 cursor-pointer hover:text-blue-600 select-none whitespace-nowrap"
                   title="Ordenar por Chave"
                 >
-                  <div className="flex items-center justify-center gap-1">
+                  <div className="flex items-center gap-1">
                     <span>Chave</span>
                     <ArrowUpDown className="h-3 w-3 opacity-60 shrink-0" />
                   </div>
                 </th>
                 <th
                   onClick={() => handleSort('issue_type')}
-                  className="w-28 md:w-32 px-2.5 py-2.5 cursor-pointer hover:text-blue-600 select-none whitespace-nowrap"
+                  className="w-24 px-2.5 py-2.5 cursor-pointer hover:text-blue-600 select-none whitespace-nowrap"
                   title="Ordenar por Tipo"
                 >
-                  <div className="flex items-center justify-center gap-1">
+                  <div className="flex items-center gap-1">
                     <span>Tipo</span>
                     <ArrowUpDown className="h-3 w-3 opacity-60 shrink-0" />
                   </div>
                 </th>
-                <th className="px-2.5 py-2.5">Resumo / Descrição</th>
+                <th className="w-48 md:w-60 px-2.5 py-2.5">Resumo / Descrição</th>
                 <th
                   onClick={() => handleSort('project_name')}
-                  className="w-36 md:w-40 px-2.5 py-2.5 cursor-pointer hover:text-blue-600 select-none whitespace-nowrap"
+                  className="w-32 md:w-36 px-2.5 py-2.5 cursor-pointer hover:text-blue-600 select-none whitespace-nowrap"
                   title="Ordenar por Projeto / Cliente"
                 >
-                  <div className="flex items-center justify-center gap-1">
-                    <Folder className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                  <div className="flex items-center gap-1">
+                    <Folder className="h-3.5 w-3.5 text-slate-400 dark:text-slate-200 shrink-0" />
                     <span>Projeto / Cliente</span>
                     <ArrowUpDown className="h-3 w-3 opacity-60 shrink-0" />
                   </div>
                 </th>
-                <th className="w-36 md:w-44 px-2.5 py-2.5 text-center">Status</th>
-                <th className="w-32 md:w-40 px-2.5 py-2.5 text-center">Sprint</th>
-                <th className="w-20 md:w-24 px-2.5 py-2.5 text-center whitespace-nowrap">Ação</th>
+                <th className="w-36 md:w-40 px-2.5 py-2.5 whitespace-nowrap">Status</th>
+                <th className="w-24 md:w-28 px-2.5 py-2.5 whitespace-nowrap">Sprint</th>
+                <th className="w-16 md:w-20 px-2.5 py-2.5 text-right whitespace-nowrap">Ação</th>
               </tr>
             </thead>
             <tbody className={`divide-y ${isLight ? 'divide-slate-200 bg-white' : 'divide-[#1e293b] bg-[#0d1117]'}`}>
@@ -222,20 +222,20 @@ export const ListView: React.FC<ListViewProps> = ({
                         )}
                       </td>
 
-                      <td className="px-2.5 py-2.5 font-medium whitespace-nowrap text-slate-700 dark:text-slate-300">
+                      <td className={`px-2.5 py-2.5 font-medium whitespace-nowrap ${isLight ? 'text-slate-700' : 'text-white'}`}>
                         <div className="flex items-center gap-1.5">
-                          <span className="font-mono text-xs font-semibold">{formattedDate}</span>
+                          <span className={`font-mono text-xs font-bold ${isLight ? 'text-slate-800' : 'text-white'}`}>{formattedDate}</span>
                         </div>
                       </td>
 
-                      <td className="px-2.5 py-2.5 whitespace-nowrap font-mono font-bold text-blue-600 dark:text-blue-400">
+                      <td className={`px-2.5 py-2.5 whitespace-nowrap font-mono font-bold ${isLight ? 'text-blue-600' : 'text-blue-400'}`}>
                         {issue.issue_key}
                       </td>
 
-                      <td className="px-2.5 py-2.5 whitespace-nowrap text-slate-700 dark:text-slate-300 font-medium">
+                      <td className={`px-2.5 py-2.5 whitespace-nowrap font-medium ${isLight ? 'text-slate-700' : 'text-white'}`}>
                         <span
-                          className={`inline-block max-w-[120px] truncate px-2 py-0.5 rounded text-[11px] font-semibold align-middle ${
-                            isLight ? 'bg-slate-100 text-slate-700 border border-slate-200' : 'bg-slate-800 text-slate-300 border border-slate-700'
+                          className={`inline-block max-w-[110px] truncate px-2 py-0.5 rounded text-[11px] font-semibold align-middle ${
+                            isLight ? 'bg-slate-100 text-slate-700 border border-slate-200' : 'bg-slate-800 text-white border border-slate-600'
                           }`}
                           title={issue.issue_type || (issue as any).type || ''}
                         >
@@ -244,51 +244,59 @@ export const ListView: React.FC<ListViewProps> = ({
                       </td>
 
                       <td
-                        className="px-2.5 py-2.5 font-medium text-slate-900 dark:text-slate-100 truncate"
+                        className={`px-2.5 py-2.5 font-semibold truncate ${isLight ? 'text-slate-900' : 'text-white'}`}
                         title={issue.summary}
                       >
                         {issue.summary}
                       </td>
 
-                      <td className="px-2.5 py-2.5 text-slate-600 dark:text-slate-400 truncate">
-                        <div className="font-semibold truncate" title={issue.project_name}>{issue.project_name}</div>
+                      <td className={`px-2.5 py-2.5 truncate ${isLight ? 'text-slate-600' : 'text-slate-200'}`}>
+                        <div className={`font-bold truncate ${isLight ? 'text-slate-900' : 'text-white'}`} title={issue.project_name}>{issue.project_name}</div>
                         {issue.client && (
-                          <div className="text-[10px] text-slate-500 truncate" title={`Cliente: ${issue.client}`}>Cli: {issue.client}</div>
+                          <div className={`text-[10px] font-medium truncate ${isLight ? 'text-slate-500' : 'text-slate-200'}`} title={`Cliente: ${issue.client}`}>Cli: {issue.client}</div>
                         )}
                       </td>
 
-                      <td className="px-2.5 py-2.5 text-center">
-                        <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider break-words ${style.badge}`}>
+                      <td className="px-2.5 py-2.5 whitespace-nowrap overflow-hidden">
+                        <span
+                          className={`inline-block max-w-full truncate px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider align-middle ${style.badge}`}
+                          title={issue.status}
+                        >
                           {issue.status}
                         </span>
                       </td>
 
-                      <td className="px-2.5 py-2.5 text-center text-slate-700 dark:text-slate-300 font-medium">
+                      <td className={`px-2.5 py-2.5 whitespace-nowrap font-medium ${isLight ? 'text-slate-700' : 'text-white'}`}>
                         {issue.sprint_name ? (
                           <span
-                            className={`inline-block px-2 py-0.5 rounded text-[11px] font-semibold align-middle break-words ${
-                              isLight ? 'bg-blue-50 text-blue-700 border border-blue-200/80' : 'bg-blue-950/60 text-blue-300 border border-blue-800/60'
+                            className={`inline-block max-w-full truncate px-2 py-0.5 rounded text-[11px] font-bold align-middle ${
+                              isLight ? 'bg-blue-50 text-blue-700 border border-blue-200/80' : 'bg-blue-950/80 text-blue-200 border border-blue-700'
                             }`}
                             title={issue.sprint_name}
                           >
                             {issue.sprint_name}
                           </span>
                         ) : (
-                          <span className="text-slate-400 text-[11px]">-</span>
+                          <span className={`text-[11px] ${isLight ? 'text-slate-400' : 'text-slate-300'}`}>-</span>
                         )}
                       </td>
 
-                      <td className="px-2.5 py-2.5 whitespace-nowrap text-center" onClick={(e) => e.stopPropagation()}>
-                        {issueUrl && (
+                      <td className="px-2.5 py-2.5 whitespace-nowrap text-right" onClick={(e) => e.stopPropagation()}>
+                        {issueUrl ? (
                           <a
                             href={issueUrl}
                             target="_blank"
                             rel="noreferrer"
-                            className="inline-flex items-center justify-center gap-0.5 text-[11px] font-semibold text-blue-600 hover:text-blue-700 hover:underline"
+                            className={`inline-flex items-center gap-0.5 text-[11px] font-bold transition-colors ${
+                              isLight ? 'text-blue-600 hover:text-blue-700 hover:underline' : 'text-blue-400 hover:text-blue-300 hover:underline'
+                            }`}
+                            title="Abrir chamado no Jira"
                           >
                             Jira
                             <ExternalLink className="h-3 w-3" />
                           </a>
+                        ) : (
+                          <span className={`text-[11px] ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>-</span>
                         )}
                       </td>
                     </tr>
@@ -297,17 +305,21 @@ export const ListView: React.FC<ListViewProps> = ({
                     {isExpanded && (
                       <tr className="animate-fadeIn">
                         <td colSpan={9} className={`p-0 border-b ${
-                          isLight ? 'bg-slate-50/90 border-blue-200/60' : 'bg-[#121721] border-blue-900/60'
+                          isLight ? 'bg-slate-50/90 border-blue-200/60' : 'bg-[#121721] border-[#1e293b]'
                         }`}>
                           <div className="p-4 pl-10">
-                            <div className="flex items-center justify-between pb-2 mb-3 border-b border-slate-200 dark:border-slate-800">
+                            <div className={`flex items-center justify-between pb-2 mb-3 border-b ${
+                              isLight ? 'border-slate-200' : 'border-[#1e293b]'
+                            }`}>
                               <div className="flex items-center gap-2">
-                                <Layers className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                                <span className="font-bold text-xs text-slate-800 dark:text-slate-200">
-                                  Histórias Vinculadas ao Chamado <span className="font-mono text-blue-600 dark:text-blue-400">{issue.issue_key}</span>
+                                <Layers className={`h-4 w-4 ${isLight ? 'text-blue-600' : 'text-blue-400'}`} />
+                                <span className={`font-bold text-xs ${isLight ? 'text-slate-800' : 'text-white'}`}>
+                                  Histórias Vinculadas ao Chamado <span className={`font-mono ${isLight ? 'text-blue-600' : 'text-blue-400'}`}>{issue.issue_key}</span>
                                 </span>
                                 {childState && !childState.loading && (
-                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+                                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                                    isLight ? 'bg-blue-100 text-blue-700' : 'bg-blue-950 text-blue-200 border border-blue-800'
+                                  }`}>
                                     {childState.stories.length}
                                   </span>
                                 )}
@@ -316,32 +328,40 @@ export const ListView: React.FC<ListViewProps> = ({
 
                             {/* State 1: Loading */}
                             {childState?.loading && (
-                              <div className="flex items-center justify-center py-6 gap-2 text-xs text-slate-500 font-medium">
-                                <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
+                              <div className={`flex items-center justify-center py-6 gap-2 text-xs font-semibold ${
+                                isLight ? 'text-slate-500' : 'text-slate-200'
+                              }`}>
+                                <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
                                 <span>Buscando histórias vinculadas...</span>
                               </div>
                             )}
 
                             {/* State 2: Error */}
                             {childState?.error && (
-                              <div className="p-3 rounded bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 text-xs">
+                              <div className={`p-3 rounded text-xs font-semibold ${
+                                isLight ? 'bg-red-50 text-red-600' : 'bg-red-950/60 text-red-300 border border-red-800'
+                              }`}>
                                 {childState.error}
                               </div>
                             )}
 
                             {/* State 3: Loaded and empty */}
                             {childState && !childState.loading && childState.stories.length === 0 && !childState.error && (
-                              <div className="py-4 text-center text-xs text-slate-500 italic">
+                              <div className={`py-4 text-center text-xs italic font-medium ${
+                                isLight ? 'text-slate-500' : 'text-slate-300'
+                              }`}>
                                 Nenhuma história vinculada encontrada para este chamado.
                               </div>
                             )}
 
                             {/* State 4: Loaded with Stories */}
                             {childState && !childState.loading && childState.stories.length > 0 && (
-                              <div className="overflow-x-auto rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0d1117] shadow-xs">
+                              <div className={`overflow-x-auto rounded-lg border shadow-sm ${
+                                isLight ? 'border-slate-200 bg-white' : 'border-[#1e293b] bg-[#0d1117]'
+                              }`}>
                                 <table className="w-full text-left text-xs border-collapse">
                                   <thead className={`text-[10px] uppercase font-bold tracking-wider border-b ${
-                                    isLight ? 'bg-slate-100 text-slate-600 border-slate-200' : 'bg-slate-900 text-slate-400 border-slate-800'
+                                    isLight ? 'bg-slate-100 text-slate-600 border-slate-200' : 'bg-[#161b22] text-white border-[#1e293b]'
                                   }`}>
                                     <tr>
                                       <th className="px-4 py-2.5 w-36 font-bold">Número do Chamado</th>
@@ -349,18 +369,20 @@ export const ListView: React.FC<ListViewProps> = ({
                                       <th className="px-4 py-2.5 w-36 font-bold">Status</th>
                                     </tr>
                                   </thead>
-                                  <tbody className={`divide-y ${isLight ? 'divide-slate-100' : 'divide-slate-800/80'}`}>
+                                  <tbody className={`divide-y ${isLight ? 'divide-slate-100' : 'divide-[#1e293b]'}`}>
                                     {childState.stories.map((story) => {
                                       const storyStyle = getStatusStyle(story.status_category || '', story.status, isLight ? 'light' : 'dark');
                                       return (
                                         <tr
                                           key={story.issue_key}
                                           className={`transition-colors ${
-                                            isLight ? 'hover:bg-slate-50' : 'hover:bg-slate-800/40'
+                                            isLight ? 'hover:bg-slate-50' : 'hover:bg-[#161b22]'
                                           }`}
                                         >
                                           {/* 1. Número do Chamado */}
-                                          <td className="px-4 py-2.5 whitespace-nowrap font-mono font-bold text-blue-600 dark:text-blue-400">
+                                          <td className={`px-4 py-2.5 whitespace-nowrap font-mono font-bold ${
+                                            isLight ? 'text-blue-600' : 'text-blue-400'
+                                          }`}>
                                             {story.url ? (
                                               <a
                                                 href={story.url}
@@ -370,7 +392,7 @@ export const ListView: React.FC<ListViewProps> = ({
                                                 title={`Ver ${story.issue_key} no Jira`}
                                               >
                                                 <span>{story.issue_key}</span>
-                                                <ExternalLink className="h-3 w-3 opacity-70" />
+                                                <ExternalLink className="h-3 w-3 opacity-80" />
                                               </a>
                                             ) : (
                                               <span>{story.issue_key}</span>
@@ -378,7 +400,9 @@ export const ListView: React.FC<ListViewProps> = ({
                                           </td>
 
                                           {/* 2. Summary */}
-                                          <td className="px-4 py-2.5 font-medium text-slate-800 dark:text-slate-200">
+                                          <td className={`px-4 py-2.5 font-bold ${
+                                            isLight ? 'text-slate-800' : 'text-white'
+                                          }`}>
                                             {story.summary}
                                           </td>
 

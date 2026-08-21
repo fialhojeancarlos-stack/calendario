@@ -63,14 +63,14 @@ const FilterDropdown: React.FC<DropdownProps> = ({
         onClick={() => setIsOpen(!isOpen)}
         className={`inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-xs font-semibold cursor-pointer transition-colors ${
           selectedCount > 0
-            ? 'border-blue-500 bg-blue-50 text-blue-700'
+            ? 'border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-700'
             : isLight
             ? 'border-slate-300 bg-white text-slate-700 hover:border-slate-400'
-            : 'border-[#30363d] bg-[#161b22] text-slate-200 hover:border-[#8b949e]'
+            : 'border-[#30363d] bg-[#161b22] text-white hover:border-[#8b949e]'
         }`}
       >
-        <span className={isLight ? 'text-slate-500' : 'text-slate-400'}>{label}:</span>
-        <span className={isLight ? 'font-bold text-slate-900' : 'font-semibold text-slate-200'}>
+        <span className={isLight ? 'text-slate-500' : 'text-slate-300 font-medium'}>{label}:</span>
+        <span className={isLight ? 'font-bold text-slate-900' : 'font-bold text-white'}>
           {selectedCount > 0 ? `${selectedCount} sel.` : 'Todos'}
         </span>
         <ChevronDown className="h-3.5 w-3.5 opacity-60" />
@@ -84,21 +84,21 @@ const FilterDropdown: React.FC<DropdownProps> = ({
         >
           {/* Internal search */}
           <div className="relative mb-2">
-            <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
+            <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400 dark:text-slate-300" />
             <input
               type="text"
               placeholder={`Buscar ${label.toLowerCase()}...`}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className={`w-full rounded-md border pl-8 pr-3 py-1.5 text-xs focus:outline-none focus:border-blue-500 ${
-                isLight ? 'bg-slate-50 border-slate-300 text-slate-800' : 'bg-[#0d1117] border-[#30363d] text-slate-200'
+                isLight ? 'bg-slate-50 border-slate-300 text-slate-800' : 'bg-[#0d1117] border-[#30363d] text-white placeholder-slate-400'
               }`}
             />
           </div>
 
           <div className="max-h-52 overflow-y-auto space-y-0.5 pr-1">
             {filteredOptions.length === 0 ? (
-              <div className="p-3 text-center text-xs text-slate-500">Nenhum item encontrado</div>
+              <div className="p-3 text-center text-xs text-slate-500 dark:text-slate-400">Nenhum item encontrado</div>
             ) : (
               filteredOptions.map((opt) => {
                 const isSelected = selectedIds.includes(opt.id);
@@ -110,10 +110,10 @@ const FilterDropdown: React.FC<DropdownProps> = ({
                       isSelected
                         ? isLight
                           ? 'bg-blue-50 text-blue-700 font-bold'
-                          : 'bg-[#21262d] text-blue-400 font-bold'
+                          : 'bg-[#21262d] text-blue-300 font-bold'
                         : isLight
                         ? 'text-slate-700 hover:bg-slate-100'
-                        : 'text-slate-300 hover:bg-[#21262d]'
+                        : 'text-slate-100 hover:bg-[#21262d] hover:text-white'
                     }`}
                   >
                     <span className="truncate pr-2">{opt.label}</span>

@@ -101,11 +101,11 @@ const MonthDayCell: React.FC<MonthDayCellProps> = ({ day, onSelectDay, theme = '
         <span
           className={`text-xs font-bold ${
             day.isToday
-              ? 'text-blue-600 font-extrabold'
+              ? 'text-blue-600 dark:text-blue-400 font-extrabold scale-105'
               : day.isCurrentMonth
               ? isLight
                 ? 'text-slate-800'
-                : 'text-slate-200'
+                : 'text-white'
               : isLight
               ? 'text-slate-400'
               : 'text-slate-500'
@@ -119,7 +119,7 @@ const MonthDayCell: React.FC<MonthDayCellProps> = ({ day, onSelectDay, theme = '
             className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${
               isLight
                 ? 'bg-slate-100 border-slate-300 text-slate-700'
-                : 'bg-[#161b22] border-[#30363d] text-slate-300'
+                : 'bg-[#161b22] border-[#30363d] text-white'
             }`}
           >
             {totalIssues}
@@ -151,7 +151,7 @@ const MonthDayCell: React.FC<MonthDayCellProps> = ({ day, onSelectDay, theme = '
           className={`mt-1 shrink-0 w-full text-left px-1 py-0.5 text-[10px] font-bold rounded transition-colors truncate cursor-pointer ${
             isLight 
               ? 'text-blue-600 hover:text-blue-800 hover:bg-blue-50' 
-              : 'text-slate-400 hover:text-blue-400 hover:bg-[#161b22]'
+              : 'text-blue-300 hover:text-blue-200 hover:bg-[#161b22]'
           }`}
         >
           + {overflowCount} {overflowCount === 1 ? 'mais' : 'mais'}
@@ -176,7 +176,7 @@ export const MonthView: React.FC<MonthViewProps> = ({ currentDate, issuesByDateM
         className={`grid grid-cols-7 h-10 border-b items-center text-center text-[10px] font-bold uppercase tracking-widest ${
           isLight
             ? 'bg-slate-100 border-slate-200 text-slate-600'
-            : 'bg-[#0d1117] border-[#1e293b] text-slate-500'
+            : 'bg-[#0d1117] border-[#1e293b] text-white'
         }`}
       >
         {WEEKDAY_NAMES.map((name) => (

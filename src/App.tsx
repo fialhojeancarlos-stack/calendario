@@ -22,7 +22,7 @@ import { EpicsUnscheduledView } from './components/EpicsUnscheduledView';
 import { JiraIssue } from './types';
 import { useUserProfile } from './hooks/useUserProfile';
 import { Filter, AlertCircle, RefreshCw, Calendar as CalendarIcon, User, CheckCircle2, Lock, ShieldAlert } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, startOfMonth, endOfMonth } from 'date-fns';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -77,6 +77,14 @@ function CalendarAppContent() {
     const saved = localStorage.getItem('jira_calendar_theme');
     return saved === 'dark' ? 'dark' : 'light';
   });
+
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
 
   const handleToggleTheme = () => {
     setTheme((prev) => {
@@ -140,9 +148,20 @@ function CalendarAppContent() {
     issues: [],
   });
 
-  // Calculate today issues count
+  // Calculate today & current month issues count
   const todayStr = format(new Date(), 'yyyy-MM-dd');
-  const todayIssuesCount = filteredIssues.filter((i) => i.delivery_date === todayStr).length;
+  const monthStartStr = format(startOfMonth(currentDate), 'yyyy-MM-dd');
+  const monthEndStr = format(endOfMonth(currentDate), 'yyyy-MM-dd');
+
+  const monthIssuesCount = filteredIssues.filter((i) => {
+    const issueDate = i.due_date || (i as any).delivery_date;
+    return issueDate && issueDate >= monthStartStr && issueDate <= monthEndStr;
+  }).length;
+
+  const todayIssuesCount = filteredIssues.filter((i) => {
+    const issueDate = i.due_date || (i as any).delivery_date;
+    return issueDate === todayStr;
+  }).length;
 
   // Admin Settings Modal State
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -236,7 +255,7 @@ function CalendarAppContent() {
         onSelectTab={(tab) => {
           setSidebarTab(tab);
         }}
-        totalIssuesCount={filteredIssues.length}
+        totalIssuesCount={monthIssuesCount}
         todayIssuesCount={todayIssuesCount}
         onSync={() => syncMutation.mutate()}
         isSyncing={syncMutation.isPending || isLoading}

@@ -32,10 +32,10 @@ export function getStatusStyle(category?: string, statusName?: string, theme: 'l
           summaryText: 'text-slate-800 font-medium',
         }
       : {
-          cardBorderBg: 'border border-emerald-500 bg-emerald-950/50 hover:bg-emerald-900/60 text-emerald-100',
-          keyText: 'text-emerald-400 font-bold',
-          badge: 'bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 font-semibold',
-          summaryText: 'text-slate-200 font-medium',
+          cardBorderBg: 'border border-emerald-500 bg-emerald-950/60 hover:bg-emerald-900/70 text-emerald-100',
+          keyText: 'text-emerald-300 font-bold',
+          badge: 'bg-emerald-600 text-white font-bold',
+          summaryText: 'text-white font-semibold',
         };
   }
 
@@ -57,10 +57,10 @@ export function getStatusStyle(category?: string, statusName?: string, theme: 'l
           summaryText: 'text-slate-700 font-medium',
         }
       : {
-          cardBorderBg: 'border border-slate-600 bg-slate-800/50 hover:bg-slate-800/80 text-slate-200',
-          keyText: 'text-slate-300 font-bold',
-          badge: 'bg-slate-700 text-slate-200 border border-slate-600 font-semibold',
-          summaryText: 'text-slate-300 font-medium',
+          cardBorderBg: 'border border-slate-600 bg-slate-800/60 hover:bg-slate-800/80 text-slate-100',
+          keyText: 'text-slate-200 font-bold',
+          badge: 'bg-slate-700 text-white border border-slate-600 font-bold',
+          summaryText: 'text-white font-semibold',
         };
   }
 
@@ -73,10 +73,10 @@ export function getStatusStyle(category?: string, statusName?: string, theme: 'l
         summaryText: 'text-amber-950 font-medium',
       }
     : {
-        cardBorderBg: 'border border-amber-500 bg-amber-950/50 hover:bg-amber-900/60 text-amber-100',
-        keyText: 'text-amber-400 font-bold',
-        badge: 'bg-amber-500/30 text-amber-300 border border-amber-500/40 font-semibold',
-        summaryText: 'text-amber-100 font-medium',
+        cardBorderBg: 'border border-amber-500 bg-amber-950/60 hover:bg-amber-900/70 text-amber-100',
+        keyText: 'text-amber-300 font-bold',
+        badge: 'bg-amber-500 text-slate-950 font-extrabold',
+        summaryText: 'text-white font-semibold',
       };
 }
 
@@ -113,7 +113,7 @@ export const IssueCard: React.FC<IssueCardProps> = ({ issue, compact = true, the
       {/* Extended details for non-compact view */}
       {!compact && (
         <div className={`mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] pt-1.5 border-t ${
-          theme === 'light' ? 'border-slate-200 text-slate-600' : 'border-slate-700 text-slate-400'
+          theme === 'light' ? 'border-slate-200 text-slate-600' : 'border-slate-700 text-slate-100 font-medium'
         }`}>
           <span className="font-semibold">{issue.project_name}</span>
           {issue.client && <span>• Cliente: {issue.client}</span>}

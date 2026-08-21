@@ -583,7 +583,7 @@ export const EpicsUnscheduledView: React.FC<EpicsUnscheduledViewProps> = ({
                 className={`sticky top-0 z-10 text-[11px] font-bold uppercase tracking-wider border-b ${
                   isLight
                     ? 'bg-slate-100 text-slate-600 border-slate-200'
-                    : 'bg-[#161b22] text-slate-400 border-[#1e293b]'
+                    : 'bg-[#161b22] text-white border-[#1e293b]'
                 }`}
               >
                 <tr>
@@ -622,7 +622,7 @@ export const EpicsUnscheduledView: React.FC<EpicsUnscheduledViewProps> = ({
                     className="px-4 py-3 cursor-pointer hover:text-blue-600 select-none whitespace-nowrap"
                   >
                     <div className="flex items-center gap-1.5">
-                      <Building2 className="h-3.5 w-3.5 text-slate-400" />
+                      <Building2 className="h-3.5 w-3.5 text-slate-400 dark:text-slate-200" />
                       <span>Projeto / Cliente</span>
                       <ArrowUpDown className="h-3 w-3 opacity-60" />
                     </div>
@@ -643,7 +643,7 @@ export const EpicsUnscheduledView: React.FC<EpicsUnscheduledViewProps> = ({
                     className="px-4 py-3 cursor-pointer hover:text-blue-600 select-none whitespace-nowrap"
                   >
                     <div className="flex items-center gap-1.5">
-                      <Clock className="h-3.5 w-3.5 text-slate-400" />
+                      <Clock className="h-3.5 w-3.5 text-slate-400 dark:text-slate-200" />
                       <span>Data de Criação</span>
                       <ArrowUpDown className="h-3 w-3 opacity-60" />
                     </div>
@@ -651,7 +651,7 @@ export const EpicsUnscheduledView: React.FC<EpicsUnscheduledViewProps> = ({
 
                   <th className="px-4 py-3 whitespace-nowrap">
                     <div className="flex items-center gap-1.5">
-                      <User className="h-3.5 w-3.5 text-slate-400" />
+                      <User className="h-3.5 w-3.5 text-slate-400 dark:text-slate-200" />
                       <span>Responsável</span>
                     </div>
                   </th>
@@ -680,7 +680,7 @@ export const EpicsUnscheduledView: React.FC<EpicsUnscheduledViewProps> = ({
                       </td>
 
                       {/* Summary */}
-                      <td className="px-4 py-3 font-semibold text-slate-900 dark:text-slate-100 max-w-md">
+                      <td className="px-4 py-3 font-semibold text-slate-900 dark:text-white max-w-md">
                         <div className="line-clamp-2" title={issue.summary}>
                           {issue.summary}
                         </div>
@@ -691,8 +691,8 @@ export const EpicsUnscheduledView: React.FC<EpicsUnscheduledViewProps> = ({
                         <span
                           className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold ${
                             isEpic
-                              ? 'bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300 border border-purple-200 dark:border-purple-800'
-                              : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-200 dark:border-amber-800'
+                              ? 'bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-200 border border-purple-200 dark:border-purple-800'
+                              : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-200 border border-amber-200 dark:border-amber-800'
                           }`}
                         >
                           {isEpic ? <Sparkles className="h-3 w-3" /> : <Tag className="h-3 w-3" />}
@@ -702,11 +702,11 @@ export const EpicsUnscheduledView: React.FC<EpicsUnscheduledViewProps> = ({
 
                       {/* Project / Client */}
                       <td className="px-4 py-3 whitespace-nowrap">
-                        <div className="font-semibold text-slate-800 dark:text-slate-200">
+                        <div className="font-bold text-slate-800 dark:text-white">
                           {issue.project_name || issue.project_key}
                         </div>
                         {issue.client && (
-                          <div className="text-[10px] font-medium text-slate-500">
+                          <div className="text-[10px] font-medium text-slate-500 dark:text-slate-200">
                             Cliente: {issue.client}
                           </div>
                         )}
@@ -722,12 +722,12 @@ export const EpicsUnscheduledView: React.FC<EpicsUnscheduledViewProps> = ({
                       </td>
 
                       {/* Data de Criação */}
-                      <td className="px-4 py-3 whitespace-nowrap font-medium text-slate-700 dark:text-slate-300">
+                      <td className="px-4 py-3 whitespace-nowrap font-medium text-slate-700 dark:text-white">
                         {issue.created_at_jira ? formatToDDMMAAAA(issue.created_at_jira) : '-'}
                       </td>
 
                       {/* Assignee */}
-                      <td className="px-4 py-3 whitespace-nowrap text-slate-700 dark:text-slate-300">
+                      <td className="px-4 py-3 whitespace-nowrap text-slate-700 dark:text-white">
                         <div className="flex items-center gap-2">
                           {issue.assignee_avatar ? (
                             <img
@@ -736,11 +736,11 @@ export const EpicsUnscheduledView: React.FC<EpicsUnscheduledViewProps> = ({
                               className="h-5 w-5 rounded-full object-cover"
                             />
                           ) : (
-                            <div className="h-5 w-5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center font-bold text-[9px]">
+                            <div className="h-5 w-5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-200 flex items-center justify-center font-bold text-[9px]">
                               {(issue.assignee_name || 'U').charAt(0)}
                             </div>
                           )}
-                          <span className="truncate max-w-[140px]" title={issue.assignee_name || 'Não atribuído'}>
+                          <span className="truncate max-w-[140px] font-medium" title={issue.assignee_name || 'Não atribuído'}>
                             {issue.assignee_name || 'Não atribuído'}
                           </span>
                         </div>
@@ -753,7 +753,7 @@ export const EpicsUnscheduledView: React.FC<EpicsUnscheduledViewProps> = ({
                           target="_blank"
                           rel="noreferrer"
                           title="Abrir chamado no Jira Cloud"
-                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-slate-100 hover:bg-blue-600 hover:text-white dark:bg-slate-800 dark:hover:bg-blue-600 text-slate-700 dark:text-slate-300 text-xs font-semibold transition-colors"
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-slate-100 hover:bg-blue-600 hover:text-white dark:bg-slate-800 dark:hover:bg-blue-600 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-colors"
                         >
                           <span>Abrir Jira</span>
                           <ExternalLink className="h-3 w-3" />

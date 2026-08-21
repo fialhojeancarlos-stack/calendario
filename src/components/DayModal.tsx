@@ -237,18 +237,24 @@ export const DayModal: React.FC<DayModalProps> = ({ isOpen, dateStr, issues, onC
                     <button
                       type="button"
                       onClick={() => toggleExpandStories(issue.issue_key)}
-                      className="mt-3 w-full flex items-center justify-between px-3 py-1.5 rounded-md text-xs font-bold transition-colors bg-white/80 dark:bg-slate-900/80 hover:bg-white dark:hover:bg-slate-900 border border-slate-200/90 dark:border-slate-700 text-slate-700 dark:text-slate-200 shadow-2xs cursor-pointer"
+                      className={`mt-3 w-full flex items-center justify-between px-3 py-1.5 rounded-md text-xs font-bold transition-colors border shadow-2xs cursor-pointer ${
+                        isLight
+                          ? 'bg-white hover:bg-slate-50 border-slate-200 text-slate-700'
+                          : 'bg-[#161b22] hover:bg-[#1f242d] border-[#30363d] text-white'
+                      }`}
                     >
                       <div className="flex items-center gap-2">
-                        <Layers className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+                        <Layers className={`h-3.5 w-3.5 ${isLight ? 'text-blue-600' : 'text-blue-400'}`} />
                         <span>Histórias Vinculadas ao Chamado</span>
                         {childState && !childState.loading && (
-                          <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+                          <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+                            isLight ? 'bg-blue-100 text-blue-700' : 'bg-blue-950 text-blue-200 border border-blue-800'
+                          }`}>
                             {childState.stories.length}
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center gap-1 text-[11px] font-semibold text-blue-600 dark:text-blue-400">
+                      <div className={`flex items-center gap-1 text-[11px] font-bold ${isLight ? 'text-blue-600' : 'text-blue-400'}`}>
                         <span>{isExpanded ? 'Ocultar' : 'Expandir'}</span>
                         {isExpanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
                       </div>
@@ -257,32 +263,40 @@ export const DayModal: React.FC<DayModalProps> = ({ isOpen, dateStr, issues, onC
                     {/* Expanded Stories Panel */}
                     {isExpanded && (
                       <div className={`mt-2 p-3 rounded-md border text-xs animate-fadeIn ${
-                        isLight ? 'bg-slate-50/90 border-blue-200' : 'bg-[#121721] border-blue-900/60'
+                        isLight ? 'bg-slate-50/90 border-blue-200' : 'bg-[#121721] border-[#1e293b]'
                       }`}>
                         {childState?.loading && (
-                          <div className="flex items-center justify-center py-4 gap-2 text-xs text-slate-500 font-medium">
-                            <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
+                          <div className={`flex items-center justify-center py-4 gap-2 text-xs font-semibold ${
+                            isLight ? 'text-slate-500' : 'text-slate-200'
+                          }`}>
+                            <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
                             <span>Buscando histórias vinculadas...</span>
                           </div>
                         )}
 
                         {childState?.error && (
-                          <div className="p-2.5 rounded bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 text-xs">
+                          <div className={`p-2.5 rounded text-xs font-semibold ${
+                            isLight ? 'bg-red-50 text-red-600' : 'bg-red-950/60 text-red-300 border border-red-800'
+                          }`}>
                             {childState.error}
                           </div>
                         )}
 
                         {childState && !childState.loading && childState.stories.length === 0 && !childState.error && (
-                          <div className="py-2 text-center text-xs text-slate-500 italic">
+                          <div className={`py-2 text-center text-xs italic font-medium ${
+                            isLight ? 'text-slate-500' : 'text-slate-300'
+                          }`}>
                             Nenhuma história vinculada encontrada para este chamado.
                           </div>
                         )}
 
                         {childState && !childState.loading && childState.stories.length > 0 && (
-                          <div className="overflow-x-auto rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0d1117]">
+                          <div className={`overflow-x-auto rounded border ${
+                            isLight ? 'border-slate-200 bg-white' : 'border-[#1e293b] bg-[#0d1117]'
+                          }`}>
                             <table className="w-full text-left text-xs border-collapse">
                               <thead className={`text-[10px] uppercase font-bold tracking-wider border-b ${
-                                isLight ? 'bg-slate-100 text-slate-600 border-slate-200' : 'bg-slate-900 text-slate-400 border-slate-800'
+                                isLight ? 'bg-slate-100 text-slate-600 border-slate-200' : 'bg-[#161b22] text-white border-[#1e293b]'
                               }`}>
                                 <tr>
                                   <th className="px-3 py-2 font-bold w-32">Número do Chamado</th>
@@ -290,22 +304,26 @@ export const DayModal: React.FC<DayModalProps> = ({ isOpen, dateStr, issues, onC
                                   <th className="px-3 py-2 font-bold w-32">Status</th>
                                 </tr>
                               </thead>
-                              <tbody className={`divide-y ${isLight ? 'divide-slate-100' : 'divide-slate-800/80'}`}>
+                              <tbody className={`divide-y ${isLight ? 'divide-slate-100' : 'divide-[#1e293b]'}`}>
                                 {childState.stories.map((story) => {
                                   const storyStyle = getStatusStyle(story.status_category || '', story.status, isLight ? 'light' : 'dark');
                                   return (
-                                    <tr key={story.issue_key} className={isLight ? 'hover:bg-slate-50' : 'hover:bg-slate-800/40'}>
-                                      <td className="px-3 py-2 font-mono font-bold text-blue-600 dark:text-blue-400 whitespace-nowrap">
+                                    <tr key={story.issue_key} className={isLight ? 'hover:bg-slate-50' : 'hover:bg-[#161b22]'}>
+                                      <td className={`px-3 py-2 font-mono font-bold whitespace-nowrap ${
+                                        isLight ? 'text-blue-600' : 'text-blue-400'
+                                      }`}>
                                         {story.url ? (
                                           <a href={story.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 hover:underline">
                                             <span>{story.issue_key}</span>
-                                            <ExternalLink className="h-3 w-3 opacity-70" />
+                                            <ExternalLink className="h-3 w-3 opacity-80" />
                                           </a>
                                         ) : (
                                           <span>{story.issue_key}</span>
                                         )}
                                       </td>
-                                      <td className="px-3 py-2 font-medium text-slate-800 dark:text-slate-200">
+                                      <td className={`px-3 py-2 font-bold ${
+                                        isLight ? 'text-slate-800' : 'text-white'
+                                      }`}>
                                         {story.summary}
                                       </td>
                                       <td className="px-3 py-2 whitespace-nowrap">

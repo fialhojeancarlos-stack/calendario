@@ -61,7 +61,7 @@ export const WeekView: React.FC<WeekViewProps> = ({
               >
                 <span
                   className={`text-[10px] font-bold uppercase tracking-widest ${
-                    isLight ? 'text-slate-500' : 'text-slate-500'
+                    isLight ? 'text-slate-500' : 'text-slate-300'
                   }`}
                 >
                   {WEEKDAY_SHORT[idx]}
@@ -69,15 +69,15 @@ export const WeekView: React.FC<WeekViewProps> = ({
                 <span
                   className={`mt-1 text-sm font-extrabold ${
                     day.isToday
-                      ? 'text-blue-600'
+                      ? 'text-blue-600 dark:text-blue-400'
                       : isLight
                       ? 'text-slate-800'
-                      : 'text-slate-200'
+                      : 'text-white'
                   }`}
                 >
                   {day.dayNumber}
                 </span>
-                <span className={`text-[10px] capitalize ${isLight ? 'text-slate-500' : 'text-slate-500'}`}>
+                <span className={`text-[10px] capitalize ${isLight ? 'text-slate-500' : 'text-slate-300 font-medium'}`}>
                   {format(day.date, 'MMM', { locale: ptBR })}
                 </span>
               </div>
@@ -94,7 +94,7 @@ export const WeekView: React.FC<WeekViewProps> = ({
                 {day.issues.length === 0 ? (
                   <div
                     className={`py-8 text-center text-[11px] font-medium select-none ${
-                      isLight ? 'text-slate-400' : 'text-slate-600'
+                      isLight ? 'text-slate-400' : 'text-slate-500'
                     }`}
                   >
                     Sem entregas
@@ -120,8 +120,8 @@ export const WeekView: React.FC<WeekViewProps> = ({
               >
                 <button
                   onClick={() => onSelectDay(day.dateString, day.issues)}
-                  className={`text-[10px] font-semibold transition-colors cursor-pointer ${
-                    isLight ? 'text-slate-600 hover:text-blue-600' : 'text-slate-400 hover:text-blue-400'
+                  className={`text-[10px] font-bold transition-colors cursor-pointer ${
+                    isLight ? 'text-slate-600 hover:text-blue-600' : 'text-white hover:text-blue-300'
                   }`}
                 >
                   {day.issues.length} {day.issues.length === 1 ? 'chamado' : 'chamados'}

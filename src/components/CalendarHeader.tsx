@@ -77,7 +77,7 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
             className={`flex items-center justify-center p-2 rounded-md border transition-colors cursor-pointer ${
               isLight
                 ? 'border-slate-300 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900'
-                : 'border-[#30363d] bg-[#161b22] text-slate-300 hover:bg-[#21262d] hover:text-white'
+                : 'border-[#30363d] bg-[#161b22] text-white hover:bg-[#21262d]'
             }`}
           >
             <Menu className="h-4 w-4" />
@@ -97,7 +97,7 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
             className={`rounded px-3 py-1 transition-colors ${
               isLight
                 ? 'text-slate-700 hover:bg-slate-200'
-                : 'text-slate-300 hover:bg-[#21262d]'
+                : 'text-white hover:bg-[#21262d]'
             }`}
           >
             <ChevronLeft className="h-4 w-4" />
@@ -106,10 +106,10 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
           <button
             id="nav-today-btn"
             onClick={onToday}
-            className={`px-4 py-1 text-xs font-semibold border-x transition-colors ${
+            className={`px-4 py-1 text-xs font-bold border-x transition-colors ${
               isLight
                 ? 'text-slate-800 border-slate-300 hover:bg-slate-200'
-                : 'text-slate-200 border-[#30363d] hover:bg-[#21262d]'
+                : 'text-white border-[#30363d] hover:bg-[#21262d]'
             }`}
           >
             Hoje
@@ -122,7 +122,7 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
             className={`rounded px-3 py-1 transition-colors ${
               isLight
                 ? 'text-slate-700 hover:bg-slate-200'
-                : 'text-slate-300 hover:bg-[#21262d]'
+                : 'text-white hover:bg-[#21262d]'
             }`}
           >
             <ChevronRight className="h-4 w-4" />
@@ -132,7 +132,7 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
         {/* Period Title */}
         <h1
           className={`text-xl font-bold tracking-tight ${
-            isLight ? 'text-slate-900' : 'text-slate-100'
+            isLight ? 'text-slate-900' : 'text-white'
           }`}
         >
           {periodTitle}
